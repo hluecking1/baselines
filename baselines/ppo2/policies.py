@@ -2,7 +2,6 @@ import numpy as np
 import tensorflow as tf
 from baselines.a2c.utils import conv, fc, conv_to_fc, batch_to_seq, seq_to_batch, lstm, lnlstm
 from baselines.common.distributions import make_pdtype
-from baselines.common.input import observation_input
 
 def nature_cnn(unscaled_images, **conv_kwargs):
     """
@@ -20,12 +19,14 @@ def nature_cnn(unscaled_images, **conv_kwargs):
 class LnLstmPolicy(object):
     def __init__(self, sess, ob_space, ac_space, nbatch, nsteps, nlstm=256, reuse=False):
         nenv = nbatch // nsteps
-        X, processed_x = observation_input(ob_space, nbatch)
+        nh, nw, nc = ob_space.shape
+        ob_shape = (nbatch, nh, nw, nc)
+        X = tf.placeholder(tf.uint8, ob_shape) #obs
         M = tf.placeholder(tf.float32, [nbatch]) #mask (done t-1)
         S = tf.placeholder(tf.float32, [nenv, nlstm*2]) #states
         self.pdtype = make_pdtype(ac_space)
         with tf.variable_scope("model", reuse=reuse):
-            h = nature_cnn(processed_x)
+            h = nature_cnn(X)
             xs = batch_to_seq(h, nenv, nsteps)
             ms = batch_to_seq(M, nenv, nsteps)
             h5, snew = lnlstm(xs, ms, S, 'lstm1', nh=nlstm)
@@ -55,9 +56,11 @@ class LstmPolicy(object):
 
     def __init__(self, sess, ob_space, ac_space, nbatch, nsteps, nlstm=256, reuse=False):
         nenv = nbatch // nsteps
-        self.pdtype = make_pdtype(ac_space)
-        X, processed_x = observation_input(ob_space, nbatch)
 
+        nh, nw, nc = ob_space.shape
+        ob_shape = (nbatch, nh, nw, nc)
+        self.pdtype = make_pdtype(ac_space)
+        X = tf.placeholder(tf.uint8, ob_shape) #obs
         M = tf.placeholder(tf.float32, [nbatch]) #mask (done t-1)
         S = tf.placeholder(tf.float32, [nenv, nlstm*2]) #states
         with tf.variable_scope("model", reuse=reuse):
@@ -90,10 +93,12 @@ class LstmPolicy(object):
 class CnnPolicy(object):
 
     def __init__(self, sess, ob_space, ac_space, nbatch, nsteps, reuse=False, **conv_kwargs): #pylint: disable=W0613
+        nh, nw, nc = ob_space.shape
+        ob_shape = (nbatch, nh, nw, nc)
         self.pdtype = make_pdtype(ac_space)
-        X, processed_x = observation_input(ob_space, nbatch)
+        X = tf.placeholder(tf.uint8, ob_shape) #obs
         with tf.variable_scope("model", reuse=reuse):
-            h = nature_cnn(processed_x, **conv_kwargs)
+            h = nature_cnn(X, **conv_kwargs)
             vf = fc(h, 'v', 1)[:,0]
             self.pd, self.pi = self.pdtype.pdfromlatent(h, init_scale=0.01)
 
@@ -115,14 +120,15 @@ class CnnPolicy(object):
 
 class MlpPolicy(object):
     def __init__(self, sess, ob_space, ac_space, nbatch, nsteps, reuse=False): #pylint: disable=W0613
+        ob_shape = (nbatch,) + ob_space.shape
         self.pdtype = make_pdtype(ac_space)
+        X = tf.placeholder(tf.float32, ob_shape, name='Ob') #obs
         with tf.variable_scope("model", reuse=reuse):
-            X, processed_x = observation_input(ob_space, nbatch)
             activ = tf.tanh
-            processed_x = tf.layers.flatten(processed_x)
-            pi_h1 = activ(fc(processed_x, 'pi_fc1', nh=64, init_scale=np.sqrt(2)))
+            flatten = tf.layers.flatten
+            pi_h1 = activ(fc(flatten(X), 'pi_fc1', nh=64, init_scale=np.sqrt(2)))
             pi_h2 = activ(fc(pi_h1, 'pi_fc2', nh=64, init_scale=np.sqrt(2)))
-            vf_h1 = activ(fc(processed_x, 'vf_fc1', nh=64, init_scale=np.sqrt(2)))
+            vf_h1 = activ(fc(flatten(X), 'vf_fc1', nh=64, init_scale=np.sqrt(2)))
             vf_h2 = activ(fc(vf_h1, 'vf_fc2', nh=64, init_scale=np.sqrt(2)))
             vf = fc(vf_h2, 'vf', 1)[:,0]
 
