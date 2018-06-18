@@ -1,0 +1,2 @@
+model_checkpoint_path: "/home/hendrik/PPO3/baselines/saved_models/Reacher/reacher"
+all_model_checkpoint_paths: "/home/hendrik/PPO3/baselines/saved_models/Reacher/reacher"
