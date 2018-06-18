@@ -59,6 +59,21 @@ All unit tests in baselines can be run using pytest runner:
 pip install pytest
 pytest
 ```
+## Training Models
+To train a PPO model just run run_mujoco.py with the following arguments:
+- --num-timesteps Number of timesteps to train. Default: 1e6
+- --save_model path to where the model should be saved
+- --env The environment to train the model in 
+(for a full list of environments see: https://gym.openai.com/envs/#mujoco)
+
+## Loading an existing model and replay
+To load and replay an existing model run play_model with the following arguments:
+- --model_path The model to load as a path 
+- --env The environment to train the model in
+- --seed The random seed. Default is 0
+
+## Tensorboard
+To access Tensorboard graphs and summaries just run: tensorboard --logdir="your_path_to/baselines/saved_models
 
 ## Subpackages
 
