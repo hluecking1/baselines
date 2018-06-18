@@ -76,6 +76,13 @@ def mujoco_arg_parser():
     parser.add_argument('--num-timesteps', type=int, default=int(1e6))
     return parser
 
+def play_mujoco():
+    parser = arg_parser()
+    parser.add_argument('--model_path', help='The path to the model', type=str, default='../../saved_models/Humanoid/human')
+    parser.add_argument('--env', help='environment ID', type=str, default='Reacher-v2')
+    parser.add_argument('--seed', help='RNG seed', type=int, default=0)
+    return parser
+
 def robotics_arg_parser():
     """
     Create an argparse.ArgumentParser for run_mujoco.py.

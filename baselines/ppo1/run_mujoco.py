@@ -6,7 +6,7 @@ from baselines import logger
 import tensorflow as tf
 
 
-def train(env_id, num_iters, seed, save):
+def train(env_id, num_timesteps, seed, save):
     from baselines.ppo1 import mlp_policy, pposgd_simple
     U.make_session(num_cpu=1).__enter__()
 
@@ -16,7 +16,7 @@ def train(env_id, num_iters, seed, save):
 
     env = make_mujoco_env(env_id, seed)
     pposgd_simple.learn(env, policy_fn,
-                        max_iters=num_iters, save=save,
+                        max_timesteps=num_timesteps, save=save,
                         timesteps_per_actorbatch=2048,
                         clip_param=0.2, entcoeff=0.0,
                         optim_epochs=10, optim_stepsize=3e-4, optim_batchsize=64,
@@ -28,7 +28,7 @@ def train(env_id, num_iters, seed, save):
 def main():
     args = mujoco_arg_parser().parse_args()
     logger.configure()
-    train(args.env, num_iters=args.num_iters, seed=args.seed, save=args.save_model)
+    train(args.env, num_timesteps=args.num_timesteps, seed=args.seed, save=args.save_model)
 
 
 if __name__ == '__main__':
