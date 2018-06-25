@@ -1,0 +1,2 @@
+model_checkpoint_path: "/home/hendrik/PPO3/baselines/saved_models/Swimmer/swimmer"
+all_model_checkpoint_paths: "/home/hendrik/PPO3/baselines/saved_models/Swimmer/swimmer"
