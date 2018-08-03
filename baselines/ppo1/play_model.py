@@ -3,8 +3,8 @@
 from baselines.common.cmd_util import make_mujoco_env, mujoco_arg_parser, play_mujoco
 from baselines.common import tf_util as U
 from baselines import logger
-from baselines.ppo1 import mlp_policy
-from baselines.ppo1.pposgd_simple import traj_segment_generator
+import mlp_policy
+from pposgd_simple import traj_segment_generator
 import imageio.plugins.ffmpeg as vid
 import tensorflow as tf
 

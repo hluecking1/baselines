@@ -9,7 +9,7 @@ from mpi4py import MPI
 from collections import deque
 
 
-def traj_segment_generator(pi, env, horizon, stochastic):
+def traj_segment_generator(pi, env, horizon, stochastic, render):
     t = 0
     ac = env.action_space.sample()  # not used, just so we have the datatype
     new = True  # marks if we're on first timestep of an episode
@@ -29,6 +29,8 @@ def traj_segment_generator(pi, env, horizon, stochastic):
     prevacs = acs.copy()
 
     while True:
+        if render:
+            env.render()
         prevac = ac
         ac, vpred = pi.act(stochastic, ob)
         # Slight weirdness here because we need value function at time T
