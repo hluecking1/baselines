@@ -40,7 +40,7 @@ More thorough tutorial on virtualenvs and options can be found [here](https://vi
 ## Installation
 Clone the repo and cd into it:
 ```bash
-git clone https://github.com/openai/baselines.git
+git clone https://github.com/hluecking1/baselines.git
 cd baselines
 ```
 If using virtualenv, create a new virtualenv and activate it
